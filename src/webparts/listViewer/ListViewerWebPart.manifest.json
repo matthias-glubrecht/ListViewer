@@ -1,0 +1,21 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "59722453-a859-42c2-9efa-642362cfd13c",
+  "alias": "ListViewerWebPart",
+  "componentType": "WebPart",
+
+  "version": "*",
+  "manifestVersion": 2,
+
+  "requiresCustomScript": false,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+    "group": { "default": "Other", "de-DE": "Andere" },
+    "title": { "default": "List Viewer", "de-DE": "Listenanzeige" },
+    "description": { "default": "List Item Viewer with Details Dialog", "de-DE": "Anzeige für Listenelemente mit Detaildialog" },
+    "officeFabricIconFontName": "Page",
+    "iconImageUrl": "./ListViewer-40x28.png",
+    "properties": { }
+  }]
+}
