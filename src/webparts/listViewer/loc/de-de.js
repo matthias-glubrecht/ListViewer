@@ -2,7 +2,8 @@ define([], function() {
   return {
     "PropertyPaneGroupListAndView": "Liste und Ansicht",
     "PropertyPaneFieldListLabel": "Anzuzeigende Liste",
-    "PropertyPaneFieldViewLabel": "Ansicht für die Anzeige",
+    "PropertyPaneFieldViewLabel": "Ansicht für die Listenanzeige",
+    "PropertyPaneDetailsViewLabel": "Ansicht für die Detailanzeige",
     "PropertyPaneButtonEditView": "Ansicht bearbeiten...",
     "PropertyPaneFieldNoEntriesLabel": "Text für 'Keine Einträge in der Ansicht'",
     "PropertyPaneFieldNoEntriesPlaceholder": "Nichts anzeigen",
@@ -10,10 +11,15 @@ define([], function() {
     "PropertyPaneGroupWebPartTitle": "Web Part-Überschrift",
     "PropertyPaneFieldWebPartTitleLabel": "Überschrift",
     "PropertyPaneFieldWebPartTitleDescription": "Leer lassen, wenn kein Titel angezeigt werden soll",
-    "PropertyPaneFieldWebPartTitlePlaceholder": "Web Part-Titel"
-    ,"ListViewerWelcomeTitle": "Willkommen bei SharePoint!"
-    ,"ListViewerWelcomeSubtitle": "Passen Sie SharePoint-Erlebnisse mit Webparts an."
-    ,"ListViewerLearnMoreLabel": "Mehr erfahren"
-    ,"ListViewerLearnMoreUrl": "https://aka.ms/spfx"
+    "PropertyPaneFieldWebPartTitlePlaceholder": "Web Part-Titel",
+    "SpinnerLoadingLabel": "Einträge werden gelesen...",
+    "ConfigMissingMessage": "Bitte wählen Sie in den Einstellungen eine Liste und eine Ansicht aus.",
+    "DoubleClickForDetails": "Doppelklicken für Details",
+    "DetailsColumnHeader": "Details",
+    "DetailsDialogTitle": "Details",
+    "DetailsDialogClose": "Schließen",
+    "DetailsDialogCloseButtonAriaLabel": "Detailanzeige schließen",
+    "DetailsLoadingError": "Fehler beim Laden der Details.",
+    "ViewHoverText": "Doppelklicken, um die vollständige Liste anzuzeigen."
   }
 });

@@ -11,17 +11,18 @@ import {
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
 
 import * as strings from 'ListViewerWebPartStrings';
-import ListViewer from './components/ListViewer';
-import { IListViewerProps } from './components/IListViewerProps';
+import { IListViewerProps } from './components/ListViewer/IListViewerProps';
 import { IListViewerService } from './service/IListViewerService';
 import { PropertyPaneAsyncDropdown } from '../../controls/PropertyPaneAsyncDropdown/PropertyPaneAsyncDropdown';
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls';
 import { ListViewerService } from './service/ListViewerService';
-import Utility from './utility/utility';
+import ListViewer from './components/ListViewer/ListViewer';
+import Utility from './utility/Utility';
 
 export interface IListViewerWebPartProps {
   selectedList: string;
   selectedView: string;
+  detailsView: string;
   webPartTitle: string;
   noEntriesText?: string;
 }
@@ -34,8 +35,8 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
       ListViewer,
       {
         service: this._service,
-        listId: this.properties.selectedList,
         viewId: this.properties.selectedView,
+        detailsViewId: this.properties.detailsView,
         webPartTitle: this.properties.webPartTitle,
         noEntriesText: this.properties.noEntriesText
       }
@@ -45,7 +46,7 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
   }
 
   protected onInit(): Promise<void> {
-    this._service = new ListViewerService(this.context);
+    this._service = new ListViewerService(this.context, this.properties.selectedList);
     return super.onInit();
   }
 
@@ -65,12 +66,14 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
   ): void {
     if (propertyPath === 'selectedList') {
       this.properties.selectedView = undefined;
+      this.properties.detailsView = undefined;
       if (newValue) {
-        this._service.GetListTitle(newValue as string).then(this.setTitle);
+        this._service = new ListViewerService(this.context, newValue as string);
+        this._service.GetListTitle().then(this.setTitle);
       } else {
         this.setTitle('');
       }
-    } else if (propertyPath === 'selectedView') {
+    } else if (propertyPath === 'selectedView' || propertyPath === 'detailsView') {
       this.context.propertyPane.refresh();
     }
   }
@@ -106,11 +109,24 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
                   selectedKey: this.properties.selectedView,
                   disabled: !this.properties.selectedList
                 }),
-                PropertyPaneButton('editView', {
+                PropertyPaneButton('editListView', {
                   text: strings.PropertyPaneButtonEditView,
                   buttonType: PropertyPaneButtonType.Primary,
                   disabled: !this.properties.selectedList || !this.properties.selectedView,
                   onClick: this.editListView
+                }),
+                PropertyPaneAsyncDropdown('detailsView', {
+                  label: strings.PropertyPaneDetailsViewLabel,
+                  loadOptions: this.loadViews,
+                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                  selectedKey: this.properties.detailsView,
+                  disabled: !this.properties.selectedList
+                }),
+                PropertyPaneButton('editDetailsView', {
+                  text: strings.PropertyPaneButtonEditView,
+                  buttonType: PropertyPaneButtonType.Primary,
+                  disabled: !this.properties.selectedList || !this.properties.detailsView,
+                  onClick: this.editDetailsView
                 }),
                 PropertyPaneTextField('noEntriesText', {
                   label: strings.PropertyPaneFieldNoEntriesLabel,
@@ -138,13 +154,21 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
     };
   }
 
-  private editListView = () => {
+  private editView = (viewId: string) => {
     const webUrl: string = Utility.trimEnd(this.context.pageContext.web.serverRelativeUrl, '/');
     const url: string =
       `${webUrl}/_layouts/15/ViewEdit.aspx?` +
-      `View={${this.properties.selectedView.toUpperCase()}}&` +
+      `View={${viewId.toUpperCase()}}&` +
       `List={${this.properties.selectedList.toUpperCase()}}`;
     window.open(encodeURI(url), '_blank');
+  }
+
+  private editListView = () => {
+    this.editView(this.properties.selectedView);
+  }
+
+  private editDetailsView = () => {
+    this.editView(this.properties.detailsView);
   }
 
   private setTitle = (title: string): void => {
@@ -156,6 +180,6 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
   }
 
   private loadViews = async (): Promise<IDropdownOption[]> => {
-    return this._service.GetViewsOfList(this.properties.selectedList);
+    return this._service.GetViewsOfList();
   }
 }

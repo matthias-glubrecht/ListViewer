@@ -1,0 +1,31 @@
+@import "~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss";
+
+.listViewer {
+  font-size: 12px;
+
+  .hinweis {
+    border: 1px solid #999;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    padding: 10px;
+  }
+
+  .itemsContainer {
+    overflow-y: auto;
+
+    .items {
+      border-collapse: collapse;
+      user-select: none;
+
+      thead {
+        tr {
+          border-bottom: 2px solid #999;
+        }
+        th {
+          text-align: left;
+          font-weight: normal;
+          padding: 10px;
+        }
+      }
+    }
+  }
+}

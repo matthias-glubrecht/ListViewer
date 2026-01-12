@@ -3,11 +3,14 @@ import { IFieldInfo } from './IFieldInfo';
 import { IViewDefinition } from './IViewDefinition';
 
 export interface IListViewerService {
-    GetViewDefinition: (listId: string, viewId: string) => Promise<IViewDefinition>;
-    GetViewsOfList: (libraryId: string) => Promise<IDropdownOption[]>;
-    GetListFields: (libraryId: string) => Promise<IFieldInfo[]>;
-    GetViewFields: (libraryId: string, viewId: string) => Promise<IFieldInfo[]>;
+    GetViewDefinition: (viewId: string) => Promise<IViewDefinition>;
+    GetViewsOfList: () => Promise<IDropdownOption[]>;
+    GetListFields: () => Promise<IFieldInfo[]>;
+    GetViewFields: (viewId: string) => Promise<IFieldInfo[]>;
     // tslint:disable-next-line:no-any
-    GetListItems: (listId: string, view: IViewDefinition) => Promise<any[]>;
-    GetListTitle: (listId: string) => Promise<string>;
+    GetListItems: (view: IViewDefinition) => Promise<any[]>;
+    GetListTitle: () => Promise<string>;
+    // Returns list items with FieldValuesAsHtml
+    // tslint:disable-next-line:no-any
+    GetListItemsAsHtmlAndText: (view: IViewDefinition) => Promise<any[]>;
 }

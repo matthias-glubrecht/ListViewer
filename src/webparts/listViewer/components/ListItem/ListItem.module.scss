@@ -1,0 +1,14 @@
+@import "~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss";
+
+.befehl {
+    border-bottom: 1px solid #999;
+    
+    &:hover {
+        cursor: pointer;
+        background-color: #f4f4f4;
+    }
+
+    td {
+        padding: 10px;
+    }
+}

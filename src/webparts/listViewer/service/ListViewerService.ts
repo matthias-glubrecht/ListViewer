@@ -6,32 +6,49 @@ import { IFieldInfo } from './IFieldInfo';
 import { IViewDefinition } from './IViewDefinition';
 
 export class ListViewerService implements IListViewerService {
-  constructor(context: WebPartContext) {
+  private _listId: string;
+
+  private _viewsPromise: Promise<IDropdownOption[]>;
+  private _listFieldsPromise: Promise<IFieldInfo[]>;
+  private _listTitlePromise: Promise<string>;
+  private _viewFieldsPromises: { [viewId: string]: Promise<IFieldInfo[]> } = {};
+  private _viewDefinitionPromises: { [viewId: string]: Promise<IViewDefinition> } = {};
+
+  constructor(context: WebPartContext, listId: string) {
     sp.setup({
       spfxContext: context
     });
+
+    this._listId = listId;
   }
 
-  public async GetViewDefinition(listId: string, viewId: string): Promise<IViewDefinition> {
-    try {
-      const view: IViewDefinition = await sp.web.lists
-        .getById(listId)
-        .views.getById(viewId)
-        .select('ViewQuery', 'ViewFields', 'ServerRelativeUrl')
-        .expand('ViewFields')
-        .get();
-      return view;
-    } catch (error) {
-      console.error('Error retrieving view:', error);
-      throw error;
+  public async GetViewDefinition(viewId: string): Promise<IViewDefinition> {
+    if (!this._viewDefinitionPromises[viewId]) {
+      this._viewDefinitionPromises[viewId] = (async (): Promise<IViewDefinition> => {
+        try {
+          const view: IViewDefinition = await sp.web.lists
+            .getById(this._listId)
+            .views.getById(viewId)
+            .select('ViewQuery', 'ViewFields', 'ServerRelativeUrl')
+            .expand('ViewFields')
+            .get();
+          return view;
+        } catch (error) {
+          delete this._viewDefinitionPromises[viewId];
+          console.error('Error retrieving view:', error);
+          throw error;
+        }
+      })();
     }
+
+    return this._viewDefinitionPromises[viewId];
   }
 
   // tslint:disable-next-line:no-any
-  public async GetListItems(listId: string, view: IViewDefinition): Promise<any[]> {
+  public async GetListItems(view: IViewDefinition): Promise<any[]> {
     try {
       // tslint:disable-next-line:no-any
-      const list: any = sp.web.lists.getById(listId);
+      const list: any = sp.web.lists.getById(this._listId);
       // tslint:disable-next-line:no-any
       const items: any[] = await list.getItemsByCAMLQuery(
         {
@@ -49,58 +66,126 @@ export class ListViewerService implements IListViewerService {
     }
   }
 
-  public async GetViewsOfList(listId: string): Promise<IDropdownOption[]> {
-    if (listId) {
-      // tslint:disable-next-line:no-any
-      const views: any[] = await sp.web.lists
-        .getById(listId)
-        .views.filter('Hidden eq false')
-        .get();
-      return views.map(v => {
-        return {
-          key: v.Id,
-          text: v.Title
-        };
-      });
-    } else {
+  public async GetViewsOfList(): Promise<IDropdownOption[]> {
+    if (!this._listId) {
       return [];
     }
+
+    if (!this._viewsPromise) {
+      this._viewsPromise = (async (): Promise<IDropdownOption[]> => {
+        try {
+          // tslint:disable-next-line:no-any
+          const views: any[] = await sp.web.lists
+            .getById(this._listId)
+            .views.filter('Hidden eq false')
+            .get();
+          return views.map(v => {
+            return {
+              key: v.Id,
+              text: v.Title
+            };
+          });
+        } catch (error) {
+          this._viewsPromise = undefined;
+          throw error;
+        }
+      })();
+    }
+
+    return this._viewsPromise;
   }
 
-  public async GetListFields(listId: string): Promise<IFieldInfo[]> {
-    // tslint:disable-next-line:no-any
-    const fields: any[] = await sp.web.lists
-      .getById(listId)
-      .fields.filter('Hidden eq false')
-      .select('Title', 'InternalName', 'TypeAsString')
-      .get();
-    return fields.map(f => {
-      return {
-        InternalName: f.InternalName,
-        Title: f.Title,
-        Type: f.TypeAsString
-      };
-    });
+  public async GetListFields(): Promise<IFieldInfo[]> {
+    if (!this._listFieldsPromise) {
+      this._listFieldsPromise = (async (): Promise<IFieldInfo[]> => {
+        try {
+          // tslint:disable-next-line:no-any
+          const fields: any[] = await sp.web.lists
+            .getById(this._listId)
+            .fields.filter('Hidden eq false')
+            .select('Title', 'InternalName', 'TypeAsString')
+            .get();
+          return fields.map(f => {
+            return {
+              InternalName: f.InternalName,
+              Title: f.Title,
+              Type: f.TypeAsString
+            };
+          });
+        } catch (error) {
+          this._listFieldsPromise = undefined;
+          throw error;
+        }
+      })();
+    }
+
+    return this._listFieldsPromise;
   }
 
-  public async GetViewFields(libraryId: string, viewId: string): Promise<IFieldInfo[]> {
-    // tslint:disable-next-line:no-any
-    const o: any = await sp.web.lists
-      .getById(libraryId)
-      .getView(viewId)
-      .fields.get();
-    return o.Items.map((f: string) => {
-      return { Title: f, InternalName: f, Type: '' };
-    });
+  public async GetViewFields(viewId: string): Promise<IFieldInfo[]> {
+    if (!this._viewFieldsPromises[viewId]) {
+      this._viewFieldsPromises[viewId] = (async (): Promise<IFieldInfo[]> => {
+        try {
+          // tslint:disable-next-line:no-any
+          const o: any = await sp.web.lists
+            .getById(this._listId)
+            .getView(viewId)
+            .fields.get();
+          return o.Items.map((f: string) => {
+            return { Title: f, InternalName: f, Type: '' };
+          });
+        } catch (error) {
+          delete this._viewFieldsPromises[viewId];
+          throw error;
+        }
+      })();
+    }
+
+    return this._viewFieldsPromises[viewId];
   }
 
-  public async GetListTitle(listId: string): Promise<string> {
-    const o: { Title: string } = await sp.web.lists
-      .getById(listId)
-      .select('Title')
-      .get();
-    if (o) {
-      return o.Title;
+  public async GetListTitle(): Promise<string> {
+    if (!this._listTitlePromise) {
+      this._listTitlePromise = (async (): Promise<string> => {
+        try {
+          const o: { Title: string } = await sp.web.lists
+            .getById(this._listId)
+            .select('Title')
+            .get();
+          if (o) {
+            return o.Title;
+          }
+        } catch (error) {
+          this._listTitlePromise = undefined;
+          throw error;
+        }
+      })();
+    }
+
+    return this._listTitlePromise;
+  }
+
+  // Returns list items with FieldValuesAsHtml
+  // tslint:disable-next-line:no-any
+  public async GetListItemsAsHtmlAndText(view: IViewDefinition): Promise<any[]> {
+    try {
+      // tslint:disable-next-line:no-any
+      const list: any = sp.web.lists.getById(this._listId);
+      // tslint:disable-next-line:no-any
+      const items: any[] = await list.getItemsByCAMLQuery(
+        {
+          ViewXml:
+            `<View><Query>${view.ViewQuery}</Query><ViewFields>${view.ViewFields.Items.map(
+              (field: string) => `<FieldRef Name='${field}' />`
+            ).join('')}</ViewFields></View>`
+        },
+        'FieldValuesAsHtml',
+        'FieldValuesAsText'
+      );
+      return items;
+    } catch (error) {
+      console.error('Error getting list items as HTML:', error);
+      throw error;
     }
   }
 }

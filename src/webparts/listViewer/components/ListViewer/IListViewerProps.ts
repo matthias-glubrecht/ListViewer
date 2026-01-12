@@ -1,9 +1,9 @@
-import { IListViewerService } from '../service/IListViewerService';
+import { IListViewerService } from '../../service/IListViewerService';
 
 export interface IListViewerProps {
   service: IListViewerService;
-  listId: string;
   viewId: string;
+  detailsViewId: string;
   webPartTitle?: string;
   noEntriesText?: string;
 }

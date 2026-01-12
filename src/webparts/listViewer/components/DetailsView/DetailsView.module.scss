@@ -1,0 +1,29 @@
+.DetailsDialogModal {
+    min-width: 600px !important;
+    max-width: 1200px !important;
+    background-color: #f0f0f0;
+}
+
+.DetailsDialogInner {
+    min-width: 400px;
+    padding: 8px;
+
+    Label {
+        display: inline-block;
+        min-width: 220px;
+    }
+}
+
+.DetailsDialogContent {
+    min-width: 400px;
+}
+
+.BodyText {
+    margin: 8px 0px;
+    border: 1px solid gray;
+    padding: 5px;
+    color: #555;
+    background-color: white;
+    overflow-y: auto;
+    max-height: 500px;
+}
