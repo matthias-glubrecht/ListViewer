@@ -1,4 +1,4 @@
-import { sp } from '@pnp/sp';
+import { List, sp } from '@pnp/sp';
 import { IListViewerService } from './IListViewerService';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
@@ -32,6 +32,12 @@ export class ListViewerService implements IListViewerService {
             .select('ViewQuery', 'ViewFields', 'ServerRelativeUrl')
             .expand('ViewFields')
             .get();
+          view.ViewFields.Items = view.ViewFields.Items.map((fName) => {
+            if (fName.startsWith('LinkTitle')) {
+              return 'Title';
+            } else {
+              return fName;
+            }});
           return view;
         } catch (error) {
           delete this._viewDefinitionPromises[viewId];
@@ -132,7 +138,9 @@ export class ListViewerService implements IListViewerService {
             .getView(viewId)
             .fields.get();
           return o.Items.map((f: string) => {
-            return { Title: f, InternalName: f, Type: '' };
+            return { Title: f,
+              InternalName: f.startsWith('LinkTitle') ? 'Title' : f,
+              Type: '' };
           });
         } catch (error) {
           delete this._viewFieldsPromises[viewId];
@@ -170,7 +178,7 @@ export class ListViewerService implements IListViewerService {
   public async GetListItemsAsHtmlAndText(view: IViewDefinition): Promise<any[]> {
     try {
       // tslint:disable-next-line:no-any
-      const list: any = sp.web.lists.getById(this._listId);
+      const list: List = sp.web.lists.getById(this._listId);
       // tslint:disable-next-line:no-any
       const items: any[] = await list.getItemsByCAMLQuery(
         {
