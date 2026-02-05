@@ -169,11 +169,12 @@ export default class DetailsView extends React.Component<IDetailsViewProps, IDet
             }) : undefined;
 
             const rows: IDetailsViewRow[] = fieldInternalNames.map(internalName => {
+                const encodedInternalName: string = internalName.replace(/_/g, '_x005f_');
                 const fieldInfo: IFieldInfo = listFields.filter(f => f.InternalName === internalName)[0];
                 const title: string = fieldInfo ? fieldInfo.Title : internalName;
                 const type: string = fieldInfo ? fieldInfo.Type : '';
-                const valueHtml: string = htmlValues && htmlValues[internalName] ? htmlValues[internalName] : '';
-                const valueText: string = textValues && textValues[internalName] ? textValues[internalName] : '';
+                const valueHtml: string = htmlValues && htmlValues[encodedInternalName] ? htmlValues[encodedInternalName] : '';
+                const valueText: string = textValues && textValues[encodedInternalName] ? textValues[encodedInternalName] : '';
                 const attachmentFiles: ILink[] | undefined = internalName === 'Attachments' ? linksToAttachments : undefined;
 
                 return {
