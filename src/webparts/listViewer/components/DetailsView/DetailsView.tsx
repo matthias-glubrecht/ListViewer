@@ -1,3 +1,4 @@
+// tslint:disable:no-any max-line-length
 import * as React from 'react';
 import { Dialog, DialogFooter, DialogType, IDialogContentProps } from 'office-ui-fabric-react/lib/Dialog';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
@@ -8,6 +9,7 @@ import { IViewDefinition } from '../../service/IViewDefinition';
 import * as strings from 'ListViewerWebPartStrings';
 import styles from './DetailsView.module.scss';
 import { IModalProps } from 'office-ui-fabric-react/lib/Modal';
+import { ILink } from '../../service/ILink';
 
 export interface IDetailsViewRow {
     internalName: string;
@@ -15,6 +17,7 @@ export interface IDetailsViewRow {
     type: string;
     valueHtml: string;
     valueText: string;
+    attachmentFiles?: ILink[];
 }
 
 export interface IDetailsViewState {
@@ -90,17 +93,42 @@ export default class DetailsView extends React.Component<IDetailsViewProps, IDet
         );
     }
 
-        private renderField(row: IDetailsViewRow): JSX.Element {
+    private renderField(row: IDetailsViewRow): JSX.Element {
         switch (row.type) {
             case 'Note': {
-                return <div>
-                    <label>{row.title}</label>
-                    <br />
+                return <div className={styles.Row}>
+                    {this.props.showBodyCaption && <div>
+                        <label>{row.title}</label>
+                        <br />
+                    </div>}
                     <div className={styles.BodyText} dangerouslySetInnerHTML={{ __html: row.valueHtml }}></div>
                 </div>;
             }
+            case 'URL': {
+                return <div className={styles.Row}>
+                    <label>{row.title}</label><span dangerouslySetInnerHTML={{ __html: row.valueHtml }}></span>
+                </div>;
+            }
+            case 'Attachments': {
+                if (row.attachmentFiles && row.attachmentFiles.length) {
+                    return <div className={styles.Row}>
+                        <label>Anlagen</label>
+                        <ul className={styles.Attachmentslist}>
+                            {row.attachmentFiles.map(
+                                (anlage: ILink, index: number) => {
+                                    return <li key={index}>
+                                        <a href={anlage.Url} target='_blank'>{anlage.Text}</a>
+                                    </li>;
+                                }
+                            )}
+                        </ul>
+                    </div>;
+                } else {
+                    return undefined;
+                }
+            }
             default: {
-                return <div>
+                return <div className={styles.Row}>
                     <label>{row.title}</label><span>{row.valueText}</span>
                 </div>;
             }
@@ -128,15 +156,17 @@ export default class DetailsView extends React.Component<IDetailsViewProps, IDet
                 ServerRelativeUrl: ''
             };
 
-            // tslint:disable-next-line:no-any
-            const items: any[] = await this.props.service.GetListItemsAsHtmlAndText(viewForItem);
-            // tslint:disable-next-line:no-any
+            const items: any[] = await this.props.service.GetListItemForDetailView(viewForItem);
             const item: any = items && items.length > 0 ? items[0] : undefined;
 
-            // tslint:disable-next-line:no-any
             const htmlValues: any = item && item.FieldValuesAsHtml ? item.FieldValuesAsHtml : {};
-            // tslint:disable-next-line:no-any
             const textValues: any = item && item.FieldValuesAsText ? item.FieldValuesAsText : {};
+            const linksToAttachments: ILink[] | undefined = item && item.AttachmentFiles ? item.AttachmentFiles.map((af) => {
+                return {
+                    Text: af.FileName,
+                    Url: af.ServerRelativeUrl
+                };
+            }) : undefined;
 
             const rows: IDetailsViewRow[] = fieldInternalNames.map(internalName => {
                 const fieldInfo: IFieldInfo = listFields.filter(f => f.InternalName === internalName)[0];
@@ -144,13 +174,15 @@ export default class DetailsView extends React.Component<IDetailsViewProps, IDet
                 const type: string = fieldInfo ? fieldInfo.Type : '';
                 const valueHtml: string = htmlValues && htmlValues[internalName] ? htmlValues[internalName] : '';
                 const valueText: string = textValues && textValues[internalName] ? textValues[internalName] : '';
+                const attachmentFiles: ILink[] | undefined = internalName === 'Attachments' ? linksToAttachments : undefined;
 
                 return {
                     internalName,
                     title,
                     type,
                     valueHtml,
-                    valueText
+                    valueText,
+                    attachmentFiles
                 };
             });
 

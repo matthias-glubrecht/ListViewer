@@ -6,7 +6,8 @@ import {
   PropertyPaneButton,
   PropertyPaneButtonType,
   PropertyPaneHorizontalRule,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneToggle
 } from '@microsoft/sp-webpart-base';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
 
@@ -25,6 +26,7 @@ export interface IListViewerWebPartProps {
   detailsView: string;
   webPartTitle: string;
   noEntriesText?: string;
+  showBodyCaption: boolean;
 }
 
 export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewerWebPartProps> {
@@ -38,7 +40,8 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
         viewId: this.properties.selectedView,
         detailsViewId: this.properties.detailsView,
         webPartTitle: this.properties.webPartTitle,
-        noEntriesText: this.properties.noEntriesText
+        noEntriesText: this.properties.noEntriesText,
+        showBodyCaptionInDetails: this.properties.showBodyCaption
       }
     );
 
@@ -138,13 +141,16 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
               ]
             },
             {
-              groupName: strings.PropertyPaneGroupWebPartTitle,
+              groupName: strings.PropertyPaneGroupLabels,
               groupFields: [
                 PropertyPaneTextField('webPartTitle', {
                   label: strings.PropertyPaneFieldWebPartTitleLabel,
                   description: strings.PropertyPaneFieldWebPartTitleDescription,
                   value: this.properties.webPartTitle,
                   placeholder: strings.PropertyPaneFieldWebPartTitlePlaceholder
+                }),
+                PropertyPaneToggle('showBodyCaption', {
+                  label: strings.PropertyPaneFieldShowBodyCaptionLabel
                 })
               ]
             }

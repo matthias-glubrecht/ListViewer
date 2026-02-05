@@ -1,3 +1,4 @@
+// tslint:disable:no-any
 import { List, sp } from '@pnp/sp';
 import { IListViewerService } from './IListViewerService';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
@@ -11,6 +12,7 @@ export class ListViewerService implements IListViewerService {
   private _viewsPromise: Promise<IDropdownOption[]>;
   private _listFieldsPromise: Promise<IFieldInfo[]>;
   private _listTitlePromise: Promise<string>;
+  private _enableAttachmentsPromise: Promise<boolean>;
   private _viewFieldsPromises: { [viewId: string]: Promise<IFieldInfo[]> } = {};
   private _viewDefinitionPromises: { [viewId: string]: Promise<IViewDefinition> } = {};
 
@@ -53,9 +55,7 @@ export class ListViewerService implements IListViewerService {
   // tslint:disable-next-line:no-any
   public async GetListItems(view: IViewDefinition): Promise<any[]> {
     try {
-      // tslint:disable-next-line:no-any
       const list: any = sp.web.lists.getById(this._listId);
-      // tslint:disable-next-line:no-any
       const items: any[] = await list.getItemsByCAMLQuery(
         {
           ViewXml:
@@ -173,13 +173,34 @@ export class ListViewerService implements IListViewerService {
     return this._listTitlePromise;
   }
 
-  // Returns list items with FieldValuesAsHtml
+  public async GetEnableAttachments(): Promise<boolean> {
+    if (!this._enableAttachmentsPromise) {
+      this._enableAttachmentsPromise = (async (): Promise<boolean> => {
+        try {
+          const o: { EnableAttachments: boolean } = await sp.web.lists
+            .getById(this._listId)
+            .select('EnableAttachments')
+            .get();
+          return o ? o.EnableAttachments : false;
+        } catch (error) {
+          this._enableAttachmentsPromise = undefined;
+          throw error;
+        }
+      })();
+    }
+
+    return this._enableAttachmentsPromise;
+  }
+
+  // Returns list items with FieldValuesAsHtml, FieldValuesAsText and AttachmentFiles, if requested
   // tslint:disable-next-line:no-any
-  public async GetListItemsAsHtmlAndText(view: IViewDefinition): Promise<any[]> {
+  public async GetListItemForDetailView(view: IViewDefinition): Promise<any[]> {
     try {
-      // tslint:disable-next-line:no-any
       const list: List = sp.web.lists.getById(this._listId);
-      // tslint:disable-next-line:no-any
+      const expands: string[] = ['FieldValuesAsHtml', 'FieldValuesAsText'];
+      if (view.ViewFields.Items.indexOf('Attachments') !== -1) {
+        expands.push('AttachmentFiles');
+      }
       const items: any[] = await list.getItemsByCAMLQuery(
         {
           ViewXml:
@@ -187,8 +208,7 @@ export class ListViewerService implements IListViewerService {
               (field: string) => `<FieldRef Name='${field}' />`
             ).join('')}</ViewFields></View>`
         },
-        'FieldValuesAsHtml',
-        'FieldValuesAsText'
+        ...expands
       );
       return items;
     } catch (error) {

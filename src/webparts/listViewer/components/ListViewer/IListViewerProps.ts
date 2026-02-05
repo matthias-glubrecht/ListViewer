@@ -6,4 +6,5 @@ export interface IListViewerProps {
   detailsViewId: string;
   webPartTitle?: string;
   noEntriesText?: string;
+  showBodyCaptionInDetails: boolean;
 }

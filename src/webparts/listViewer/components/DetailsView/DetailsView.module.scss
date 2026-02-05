@@ -18,6 +18,10 @@
     min-width: 400px;
 }
 
+.Row {
+    margin-top: 3px;
+}
+
 .BodyText {
     margin: 8px 0px;
     border: 1px solid gray;
@@ -26,4 +30,14 @@
     background-color: white;
     overflow-y: auto;
     max-height: 500px;
+}
+
+.Attachmentslist {
+    margin-top: 0px;
+    display: inline-block;
+    vertical-align: top;
+    li {
+        list-style: none;
+        margin-left: -41px;
+    } 
 }

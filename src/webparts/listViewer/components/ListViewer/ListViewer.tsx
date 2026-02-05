@@ -83,6 +83,7 @@ export default class ListViewer extends React.Component<IListViewerProps, IListV
           service={this.props.service}
           viewId={this.props.detailsViewId}
           onDismiss={this.dialogClosed}
+          showBodyCaption={this.props.showBodyCaptionInDetails}
         />
       }
     </div>;

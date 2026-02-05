@@ -10,7 +10,8 @@ export interface IListViewerService {
     // tslint:disable-next-line:no-any
     GetListItems: (view: IViewDefinition) => Promise<any[]>;
     GetListTitle: () => Promise<string>;
+    GetEnableAttachments: () => Promise<boolean>;
     // Returns list items with FieldValuesAsHtml
     // tslint:disable-next-line:no-any
-    GetListItemsAsHtmlAndText: (view: IViewDefinition) => Promise<any[]>;
+    GetListItemForDetailView: (view: IViewDefinition) => Promise<any[]>;
 }
