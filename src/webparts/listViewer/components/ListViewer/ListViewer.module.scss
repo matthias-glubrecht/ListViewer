@@ -20,6 +20,42 @@
         tr {
           border-bottom: 2px solid #999;
         }
+
+        th {
+          text-align: left;
+          font-weight: normal;
+          padding: 10px;
+        }
+      }
+    }
+  }
+}
+
+.classicListViewer {
+  margin: 0px auto;
+  box-shadow:
+    0 2px 4px 0 rgba(0, 0, 0, 0.2),
+    0 25px 50px 0 rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+
+  .hinweis {
+    border: 1px solid #999;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    padding: 10px;
+  }
+
+  .itemsContainer {
+    overflow-y: auto;
+
+    .items {
+      border-collapse: collapse;
+      user-select: none;
+
+      thead {
+        tr {
+          border-bottom: 2px solid #999;
+        }
+
         th {
           text-align: left;
           font-weight: normal;

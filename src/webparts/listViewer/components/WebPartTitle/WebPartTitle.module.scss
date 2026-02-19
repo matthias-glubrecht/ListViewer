@@ -1,3 +1,5 @@
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+
 .webPartHeader {
     display: flex;
     align-items: baseline;
@@ -10,6 +12,7 @@
         flex-grow: 1;
         overflow-x: hidden;
         text-overflow: ellipsis;
+
         .link {
             cursor: pointer;
         }
@@ -31,5 +34,19 @@
         .webPartTitle {
             font-size: 28px;
         }
+    }
+}
+
+.classicWebPartHeader {
+    @include ms-font-xl;
+    @include ms-fontColor-white;
+    background-color: $ms-color-themeDark;
+    padding: 3px 10px;
+
+    a,
+    a:hover,
+    a:visited {
+        text-decoration: none;
+        @include ms-fontColor-white;
     }
 }

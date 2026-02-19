@@ -12,6 +12,7 @@ declare interface IListViewerWebPartStrings {
   PropertyPaneFieldWebPartTitleDescription: string;
   PropertyPaneFieldWebPartTitlePlaceholder: string;
   PropertyPaneFieldShowBodyCaptionLabel: string;
+  PropertyPaneFieldUseClassicLookLabel: string;
   SpinnerLoadingLabel: string;
   ConfigMissingMessage: string;
   DoubleClickForDetails: string;

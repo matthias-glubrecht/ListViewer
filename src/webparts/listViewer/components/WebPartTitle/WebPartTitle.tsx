@@ -8,24 +8,36 @@ const WebPartTitle: React.SFC<IWebPartTitleProps> = (props) => {
         window.location.href = props.link;
     };
 
-    return (
-        <div className={styles.webPartHeader}>
-            <div className={styles.webPartTitle}>
+    if (props.useClassicLook) {
+        return (
+            <div className={styles.classicWebPartHeader}>
                 {props.link ?
-                    <span
-                        className={styles.link}
-                        role='heading'
-                        aria-level='2'
-                        title={props.hoverText}
-                        onDoubleClick={navigateToLink}
-                    >
-                        {props.text}
-                    </span>
+                    <a title={props.hoverText} href={props.link}>{props.text}</a>
                     :
-                    <span role='heading' aria-level='2'>{props.text}</span>
+                    <span title={props.hoverText}>{props.text}</span>
                 }
             </div>
-        </div>);
+        );
+    } else {
+        return (
+            <div className={styles.webPartHeader}>
+                <div className={styles.webPartTitle}>
+                    {props.link ?
+                        <span
+                            className={styles.link}
+                            role='heading'
+                            aria-level='2'
+                            title={props.hoverText}
+                            onDoubleClick={navigateToLink}
+                        >
+                            {props.text}
+                        </span>
+                        :
+                        <span role='heading' aria-level='2'>{props.text}</span>
+                    }
+                </div>
+            </div>);
+    }
 };
 
 export default WebPartTitle;

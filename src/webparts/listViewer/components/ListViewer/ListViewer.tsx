@@ -36,12 +36,14 @@ export default class ListViewer extends React.Component<IListViewerProps, IListV
   }
 
   public render(): React.ReactElement<IListViewerProps> {
-    return <div className={styles.listViewer}>
+    const styleListViewer: string = this.props.useClassicLook ? styles.classicListViewer : styles.listViewer;
+    return <div className={styleListViewer}>
       {this.props.webPartTitle &&
         <WebPartTitle
           text={this.props.webPartTitle}
           link={this.state.viewUrl}
           hoverText={strings.ViewHoverText}
+          useClassicLook={this.props.useClassicLook}
         />
       }
       {this.state.loading &&

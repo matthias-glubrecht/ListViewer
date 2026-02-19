@@ -7,4 +7,5 @@ export interface IListViewerProps {
   webPartTitle?: string;
   noEntriesText?: string;
   showBodyCaptionInDetails: boolean;
+  useClassicLook: boolean;
 }

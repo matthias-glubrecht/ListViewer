@@ -27,6 +27,7 @@ export interface IListViewerWebPartProps {
   webPartTitle: string;
   noEntriesText?: string;
   showBodyCaption: boolean;
+  useClassicLook: boolean;
 }
 
 export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewerWebPartProps> {
@@ -41,7 +42,8 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
         detailsViewId: this.properties.detailsView,
         webPartTitle: this.properties.webPartTitle,
         noEntriesText: this.properties.noEntriesText,
-        showBodyCaptionInDetails: this.properties.showBodyCaption
+        showBodyCaptionInDetails: this.properties.showBodyCaption,
+        useClassicLook: this.properties.useClassicLook
       }
     );
 
@@ -151,6 +153,9 @@ export default class ListViewerWebPart extends BaseClientSideWebPart<IListViewer
                 }),
                 PropertyPaneToggle('showBodyCaption', {
                   label: strings.PropertyPaneFieldShowBodyCaptionLabel
+                }),
+                PropertyPaneToggle('useClassicLook', {
+                  label: strings.PropertyPaneFieldUseClassicLookLabel
                 })
               ]
             }

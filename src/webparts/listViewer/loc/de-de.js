@@ -13,6 +13,7 @@ define([], function() {
     "PropertyPaneFieldWebPartTitleDescription": "Leer lassen, wenn kein Titel angezeigt werden soll",
     "PropertyPaneFieldWebPartTitlePlaceholder": "Web Part-Titel",
     "PropertyPaneFieldShowBodyCaptionLabel": "Anzeige des Namens der Textkörperspalte",
+    "PropertyPaneFieldUseClassicLookLabel": "Klassischer Look",
     "SpinnerLoadingLabel": "Einträge werden gelesen...",
     "ConfigMissingMessage": "Bitte wählen Sie in den Einstellungen eine Liste und eine Ansicht aus.",
     "DoubleClickForDetails": "Doppelklicken für Details",

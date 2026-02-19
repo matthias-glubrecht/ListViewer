@@ -13,6 +13,7 @@ define([], function() {
     "PropertyPaneFieldWebPartTitleDescription": "Leave blank if no title should be displayed",
     "PropertyPaneFieldWebPartTitlePlaceholder": "Web Part Title",
     "PropertyPaneFieldShowBodyCaptionLabel": "Display the name of the body field",
+    "PropertyPaneFieldUseClassicLookLabel": "Use classic look",
     "SpinnerLoadingLabel": "Loading entries...",
     "ConfigMissingMessage": "Please select a list and a view in the settings.",
     "DoubleClickForDetails": "Double-click for details",
